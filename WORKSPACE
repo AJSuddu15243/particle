@@ -1,5 +1,5 @@
 # This tells Bazel the name of your project.
-workspace(name = "blender") # type: ignore
+workspace(name = "particle") # type: ignore
 
 # If you use any third-party libraries, you can add them here.
 # For example, to add zlib (a common library), you could do:
