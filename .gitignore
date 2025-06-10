@@ -1,6 +1,11 @@
 # generic files to ignore
 .*
 
+# Bazel build outputs and cache
+bazel-*
+.bazelrc.local
+.bazelversion.local
+
 # python temp paths
 __pycache__/
 *.py[cod]
