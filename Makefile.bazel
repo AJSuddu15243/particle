@@ -1,0 +1,143 @@
+# Bazel wrapper Makefile for Blender
+# This provides familiar make targets that call Bazel underneath
+
+# Detect whether to use bazelisk or bazel
+BAZEL_CMD := $(shell command -v bazelisk 2>/dev/null || command -v bazel 2>/dev/null || echo "bazel")
+
+.PHONY: all build test clean install help debug release package
+
+# Default target
+all: build
+
+# Build Blender
+build:
+	@echo "Building Blender with Bazel..."
+	$(BAZEL_CMD) build //:blender --config=macos
+
+# Build in debug mode
+debug:
+	@echo "Building Blender in debug mode..."
+	$(BAZEL_CMD) build //:blender --config=macos --config=dbg
+
+# Build in release mode  
+release:
+	@echo "Building Blender in release mode..."
+	$(BAZEL_CMD) build //:blender --config=macos --config=opt
+
+# Run tests
+test:
+	@echo "Running tests..."
+	$(BAZEL_CMD) test //tests:all_tests --config=macos
+
+# Run specific tests
+test-blenlib:
+	$(BAZEL_CMD) test //tests:blenlib_tests --config=macos
+
+test-cycles:
+	$(BAZEL_CMD) test //tests:cycles_tests --config=macos
+
+test-python:
+	$(BAZEL_CMD) test //tests:python_tests --config=macos
+
+# Clean build artifacts
+clean:
+	@echo "Cleaning build artifacts..."
+	$(BAZEL_CMD) clean
+
+# Deep clean (removes all Bazel files)
+clean-all:
+	@echo "Deep cleaning..."
+	$(BAZEL_CMD) clean --expunge
+
+# Install Blender (copy to system location)
+install: release
+	@echo "Installing Blender..."
+	sudo cp bazel-bin/blender /usr/local/bin/blender
+
+# Package for distribution
+package: release
+	@echo "Creating release package..."
+	$(BAZEL_CMD) build //release:blender_macos_app --config=macos --config=opt
+
+# Build Cycles standalone
+cycles:
+	@echo "Building Cycles standalone..."
+	$(BAZEL_CMD) build //intern/cycles:cycles_standalone --config=macos
+
+# Build documentation
+docs:
+	@echo "Building documentation..."
+	$(BAZEL_CMD) build //doc:python_api_docs //doc:cpp_docs --config=macos
+
+# Run code formatting/linting tools
+format:
+	@echo "Running code formatting..."
+	$(BAZEL_CMD) run //tools:code_clean
+
+# Check code quality
+check:
+	@echo "Running code quality checks..."
+	$(BAZEL_CMD) run //tools:check_source
+
+# Build tools
+tools:
+	@echo "Building development tools..."
+	$(BAZEL_CMD) build //tools:all --config=macos
+
+# Print build information
+info:
+	@echo "Bazel version:"
+	@$(BAZEL_CMD) version
+	@echo ""
+	@echo "Build configuration:"
+	@$(BAZEL_CMD) info --config=macos
+
+# Show available targets
+targets:
+	@echo "Available Bazel targets:"
+	@$(BAZEL_CMD) query //...
+
+# Development server (if applicable)
+serve:
+	@echo "This would start a development server if applicable"
+
+# Help
+help:
+	@echo "Blender Bazel Build System"
+	@echo ""
+	@echo "Available targets:"
+	@echo "  all       - Build Blender (default)"
+	@echo "  build     - Build Blender" 
+	@echo "  debug     - Build in debug mode"
+	@echo "  release   - Build in release mode"
+	@echo "  test      - Run all tests"
+	@echo "  test-*    - Run specific test suites"
+	@echo "  clean     - Clean build artifacts"
+	@echo "  clean-all - Deep clean (removes all Bazel files)"
+	@echo "  install   - Install Blender to system"
+	@echo "  package   - Create release package"
+	@echo "  cycles    - Build Cycles standalone"
+	@echo "  docs      - Build documentation"
+	@echo "  format    - Run code formatting"
+	@echo "  check     - Run code quality checks"
+	@echo "  tools     - Build development tools"
+	@echo "  info      - Show build information"
+	@echo "  targets   - Show available Bazel targets"
+	@echo "  help      - Show this help message"
+	@echo ""
+	@echo "Examples:"
+	@echo "  make                    # Build Blender"
+	@echo "  make debug             # Build in debug mode"
+	@echo "  make test              # Run all tests"
+	@echo "  make package           # Create release package"
+	@echo "  make clean             # Clean build artifacts"
+
+# Compatibility with existing CMake workflow
+cmake:
+	@echo "This project now uses Bazel instead of CMake."
+	@echo "Run 'make help' to see available targets."
+	@echo "Use 'make build' instead of 'make' for CMake builds."
+
+# Override the default CMake-style targets people might try
+configure: cmake
+ninja: cmake
