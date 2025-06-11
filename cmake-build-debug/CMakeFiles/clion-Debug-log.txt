@@ -1,0 +1,12 @@
+/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/aarch64/ninja -DCMAKE_C_COMPILER=clang -G Ninja -S /Users/ananthjayakrishnan/Desktop/Programming_projects/particle -B /Users/ananthjayakrishnan/Desktop/Programming_projects/particle/cmake-build-debug
+-- Detected OS X 15.4 and Command Line Tools 16.3 at /Library/Developer/CommandLineTools
+-- SDKs Directory: /Library/Developer/CommandLineTools/SDKs
+-- Detected OSX_SYSROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX15.4.sdk
+CMake Error at build_files/cmake/platform/platform_apple.cmake:58 (message):
+  Mac OSX requires pre-compiled libs at:
+  '/Users/ananthjayakrishnan/Desktop/Programming_projects/particle/lib/macos_arm64'
+Call Stack (most recent call first):
+  CMakeLists.txt:1578 (include)
+
+
+-- Configuring incomplete, errors occurred!
